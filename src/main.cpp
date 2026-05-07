@@ -5,7 +5,6 @@
 #include <string>
 #include <variant>
 #include <vector>
-#include <expected>
 
 enum TokenType { NUMBER, ADD, SUM, RANGE, END_OF_FILE };
 struct Token {
@@ -108,7 +107,22 @@ Node parse_expr(Scanner &s, Token &cur) {
   return node;
 }
 
-auto eval(const Node &node) -> std::expected<Value, Err> {
+std::string to_str(Value v) {
+  if (v.data.empty()) {
+    return "";
+  }
+  if (v.data.size() == 1) {
+    return std::to_string(v.data[0]);
+  }
+  std::string res;
+  for (int i : v.data) {
+    res += std::to_string(i) + " ";
+  }
+
+  return res;
+}
+
+Value eval(const Node &node) {
   if (const auto *v = std::get_if<Value>(&node)) return *v;
 
   if (const auto *un = std::get_if<std::unique_ptr<UnaryOp>>(&node)) {
@@ -155,7 +169,10 @@ Value run(std::string src) {
 }
 
 int main() {
-  Value res = run("+/ 6 9");
-  std::cout << "Result: " << (res.data.empty() ? 0 : res.data[0]) << std::endl;
+  for (;;) {
+    std::string in;
+    std::getline(std::cin, in);
+    std::cout << to_str(run(in)) << std::endl;
+  }
   return 0;
 }

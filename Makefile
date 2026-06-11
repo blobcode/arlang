@@ -1,4 +1,4 @@
 main: src/main.cpp
-	g++ src/main.cpp -o ari -std=c++23
+	g++ src/main.cpp -o target/ari -std=c++23
 run: main
-	./ari
+	./target/ari
